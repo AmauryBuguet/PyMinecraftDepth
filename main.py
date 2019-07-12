@@ -8,16 +8,19 @@ from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
 from PyQt5.QtGui import QPixmap, QImage, QColor, QTextCursor
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QTextEdit, QMainWindow,
     QLabel, QPushButton, QWidget, QTextEdit)
+#import test1Scalable #code pour gerer les pins de la raspberry
 
-# les seules valeurs a toucher sont les 4 suivantes :
+# les seules valeurs a toucher sont les 5 suivantes :
+# période d'affichage (ms)
+periode = 200
 
 # taille écran
 screenH = 768
 screenW = 1366
 
 # valeurs d'affichage
-nbBlocsD = 4 # nombre de blocs de distance
-nbBlocsH = 3 # nombre de blocs de hauteur
+nbBlocsD = 10 # nombre de blocs de distance
+nbBlocsH = 10 # nombre de blocs de hauteur
 
 # TESTS HAUTEUR:
 # 10 blocs de haut a 10 blocs de distance = ~500 pixels -> 50 pix/blocs
@@ -49,9 +52,13 @@ nbBlocsH = 3 # nombre de blocs de hauteur
 #    nbPix = 352 pixels de hauteur sur l'écran
 #    couleur de 0 à 36
 
+# après tests il faudrait en fait un nb de pixels adaptable en fonction de la distance
+# ou écarter les "prises de pixels" aux extrémités
+
 #nbPixels = 4*nbBlocsH*(20-nbBlocsD) + 10*(20-nbBlocsD)
 nbPixels = 500
 couleurMax =  4*nbBlocsD+20
+couleurMin = 15 # en dessous de cette valeur le bloc est considéré comme étant juste devant
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -99,7 +106,7 @@ class MainWindow(QMainWindow):
         #end CHART
 
         self.timer = QTimer( self )
-        self.timer.setInterval( 200 )
+        self.timer.setInterval( periode )
         self.timer.start
         self.timer.timeout.connect( self.refresh )
 
@@ -157,11 +164,10 @@ class MainWindow(QMainWindow):
             #convert colors from 0->couleurMax to 0->nbBlocsD
             if colorvalue > couleurMax:
                 colorvalue = nbBlocsD
+            elif colorvalue < couleurMin:
+                colorvalue = 0
             else:
-                if colorvalue < 15:
-                    colorvalue = 0
-                else:
-                    colorvalue = int(colorvalue/(couleurMax/nbBlocsD))
+                colorvalue = int(colorvalue/(couleurMax/nbBlocsD))
             array[i]=colorvalue
 
         self.convertToMatrix(array)
@@ -182,6 +188,7 @@ class MainWindow(QMainWindow):
                         for j in range(array[i]+1,min(nbBlocsD,array[i-1])):
                             matrix[i][j]=1
 
+        #test1Scalable.convertToHexa(motifF,nbBlocsD,nbBlocsH)  # es-ce bien la fonction a utiliser pour l'affichage ?
         self.displayMatrix(matrix)
 
     def displayMatrix(self, matrix):
