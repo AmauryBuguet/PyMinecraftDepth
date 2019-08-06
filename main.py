@@ -8,11 +8,11 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QImage, QColor, QTextCursor
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QTextEdit, QMainWindow,
     QLabel, QPushButton, QWidget, QTextEdit)
-#import test1Scalable #code pour gerer les pins de la raspberry
+import test1Scalable #code pour gerer les pins de la raspberry
 
 # les seules valeurs a toucher sont les 5 suivantes :
 # période d'affichage (ms)
-periode = 200
+periode = 1000
 
 # taille écran
 screenH = 768
@@ -79,7 +79,7 @@ def sendDataToDisplay(motif1,x,y,motifMult=1,frequence=0.5,sleeptime=0.5):
 				else:
 					motifF[z][i][j]=0
 	#motifF=convertMap(motifF,x,y)
-	test1Scalable.convertToHexa(motifF,x,y,frequence,sleeptime)#ici les commentaires pour marcher sans rasberry
+	test1Scalable.convertToHexa(motifF,x,y,frequence,sleeptime)
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -159,6 +159,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle( "Minecraft Depth Map" )
 
     def startTimer( self ):
+        test1Scalable.mainFunction()
         self.timer.start()
 
     def stopTimer( self ):
@@ -196,8 +197,8 @@ class MainWindow(QMainWindow):
     def convertToMatrix(self, array):
 
         matrix=[[0 for j in range(nbBlocsD)] for i in range(nbBlocsH)]
-	motifS=[[0 for i in range(x)] for j in range(y)]
-	motifS=[[0, 0, 0, 0], 
+        motifS=[[0 for i in range(nbBlocsD)] for j in range(nbBlocsH)]
+        motifS=[[0, 0, 0, 0], 
 	 [1, 1, 1, 1], 
 	 [0, 0, 0, 0], 
 	 [0, 0, 0, 0]] 
@@ -214,8 +215,8 @@ class MainWindow(QMainWindow):
                         for j in range(array[i]+1,min(nbBlocsD,array[i-1])):
                             matrix[i][j]=1
 
-        sendDataToDisplay(matrix,nbBlocsD,nbBlocsH)
-        self.displayMatrix(motifS)
+        sendDataToDisplay(matrix,nbBlocsD,nbBlocsH,0)
+        self.displayMatrix(matrix)
 
     def displayMatrix(self, matrix):
         self.matrixDisplay.clear()

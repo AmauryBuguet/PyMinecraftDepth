@@ -4,11 +4,11 @@ import RPi.GPIO as GPIO
 import time
 import threading
 import math
-import queue as Queue
+#import Queue
 
 #SDI   = 26#or 26 red 21 green
-RCLK  = 20
-SRCLK = 16
+RCLK  = 16#20
+SRCLK = 20#16
 sleepInOut=0.5
 
 x = 4 #Largeur de l'ecran
@@ -16,7 +16,7 @@ y = 4 #hauteur de l'ecran
 motif0= [[0x00,0x00],[0x01,0x01]]
 nbMotif=len(motif0) #nombre de motif affichable
 nbShift=0
-queue = Queue.Queue()
+#queue = Queue.Queue()
 
 frequence1=0.5
 sleeptime1=0.5
@@ -29,6 +29,7 @@ nbShiftCalculate(x,y)
 
 def convertToHexa(motifV,x1,y1,frequence2=0.5,sleeptime2=0.5):
 	global x
+	print(motifV)
 	global y
 	global nbMotif
 	global nbShift
@@ -56,7 +57,7 @@ def convertToHexa(motifV,x1,y1,frequence2=0.5,sleeptime2=0.5):
 				#print(str(motifCpt)+","+str(shiftNumber))
 				motif[motifCpt][shiftNumber]=motif[motifCpt][shiftNumber] | valeur
 				shiftCpt=shiftCpt+1
-	for testaff1 in range(0,nbMotif):
+	for testaff1 in range(0,len(motifV)):
 		valeuraff=""
 		for testaff in range(0,nbShift):
 			valeuraff=valeuraff+","+str(motif[testaff1][testaff])
@@ -66,10 +67,10 @@ def convertToHexa(motifV,x1,y1,frequence2=0.5,sleeptime2=0.5):
 	#motif[1]=[0x00,0x00]
 	#motif[2]=[0xf0,0xf0]
 	#motif[3]=[0x0f,0x0f]
-	print ("motif", motif)
+	#print ("motif", motif)
 	motif0=motif
 	nbMotif=len(motif0)
-	print("nbMotif",nbMotif)
+	#print("nbMotif",nbMotif)
 	#queue.put(motif)
 	return motif
 
@@ -78,7 +79,7 @@ def setup():
 	GPIO.setmode(GPIO.BCM)    # Number GPIOs by its physical location
 	for pinSortie in range(0,len(DataOutPut)): 
 		GPIO.setup(DataOutPut[pinSortie], GPIO.OUT)
-		print("pinSortie",pinSortie,"=",DataOutPut[pinSortie])
+		#print("pinSortie",pinSortie,"=",DataOutPut[pinSortie])
 	GPIO.setup(RCLK, GPIO.OUT)
 	GPIO.setup(SRCLK, GPIO.OUT)
 	
@@ -97,7 +98,7 @@ def theLoop():
 		#else:
 			#motif2 = queue.get()
 			#print ("motif2 is updated ",motif2)
-		print("motif2",motif0[i%nbMotif]," nbmotif",nbMotif)
+		#print("motif2",motif0[i%nbMotif]," nbmotif",nbMotif)
 		for bit in range(0,8):
 			for line in range(0,nbShift):
 				GPIO.output(DataOutPut[line], 0x80 & (motif0[i%nbMotif][line] << bit))
@@ -131,7 +132,7 @@ def mainFunction():
 	setup()
 	threading.Timer(0.5,theLoop).start()
 
-##mainFunction()#pour faire tourner uniquement ce fichier
+#mainFunction()#pour faire tourner uniquement ce fichier
 #setup()
 #destroy()
 #theLoop()
