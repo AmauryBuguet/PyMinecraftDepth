@@ -4,7 +4,7 @@
 
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
+#from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
 from PyQt5.QtGui import QPixmap, QImage, QColor, QTextCursor
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QTextEdit, QMainWindow,
     QLabel, QPushButton, QWidget, QTextEdit)
@@ -19,8 +19,8 @@ screenH = 768
 screenW = 1366
 
 # valeurs d'affichage
-nbBlocsD = 10 # nombre de blocs de distance
-nbBlocsH = 10 # nombre de blocs de hauteur
+nbBlocsD = 4 # nombre de blocs de distance
+nbBlocsH = 4 # nombre de blocs de hauteur
 
 # TESTS HAUTEUR:
 # 10 blocs de haut a 10 blocs de distance = ~500 pixels -> 50 pix/blocs
@@ -70,39 +70,39 @@ class MainWindow(QMainWindow):
         self.matrixDisplay = QTextEdit()
         self.matrixDisplay.setFixedSize( 165, 180 )
 
-        self.valuesDisplay = QTextEdit()
-        self.valuesDisplay.setFixedSize( 50, nbPixels )
+#        self.valuesDisplay = QTextEdit()
+#        self.valuesDisplay.setFixedSize( 50, nbPixels )
 
         # CHART
-        self.serie = QLineSeries()
+#        self.serie = QLineSeries()
 
-        self.chart = QChart()
-        self.chart.addSeries( self.serie )
-        self.chart.legend().hide()
-        self.chart.layout().setContentsMargins( 0, 0, 0, 0 )
+#        self.chart = QChart()
+#        self.chart.addSeries( self.serie )
+#        self.chart.legend().hide()
+#        self.chart.layout().setContentsMargins( 0, 0, 0, 0 )
 
-        self.xAxis = QValueAxis()
-        self.xAxis.setTitleText( "Height" )
-        self.xAxis.setLabelFormat( "%d" )
-        self.xAxis.setRange( 0, nbPixels )
+#        self.xAxis = QValueAxis()
+#        self.xAxis.setTitleText( "Height" )
+#        self.xAxis.setLabelFormat( "%d" )
+#        self.xAxis.setRange( 0, nbPixels )
 
-        self.yAxis = QValueAxis()
-        self.yAxis.setLabelFormat( "%d" )
-        self.yAxis.setTitleText( "Distance " )
-        self.yAxis.setRange( 0, couleurMax )
+#        self.yAxis = QValueAxis()
+#        self.yAxis.setLabelFormat( "%d" )
+#        self.yAxis.setTitleText( "Distance " )
+#        self.yAxis.setRange( 0, couleurMax )
 
-        self.chart.setAxisX( self.xAxis )
-        self.chart.setAxisY( self.yAxis )
+#        self.chart.setAxisX( self.xAxis )
+#        self.chart.setAxisY( self.yAxis )
 
-        self.serie.attachAxis( self.xAxis )
-        self.serie.attachAxis( self.yAxis )
+#        self.serie.attachAxis( self.xAxis )
+#        self.serie.attachAxis( self.yAxis )
 
-        self.chart.setTitle( "Profile line" )
+#        self.chart.setTitle( "Profile line" )
 
-        self.chartView = QChartView( self )
-        self.chartView.setChart( self.chart )
-        self.chartView.rotate( 90 )
-        self.chartView.setGeometry( 20, 195, 450, 400 )
+#        self.chartView = QChartView( self )
+#        self.chartView.setChart( self.chart )
+#        self.chartView.rotate( 90 )
+#        self.chartView.setGeometry( 20, 195, 450, 400 )
         #end CHART
 
         self.timer = QTimer( self )
@@ -123,13 +123,13 @@ class MainWindow(QMainWindow):
         topLayout = QGridLayout()
         topLayout.addWidget( self.startButton, 0, 0 )
         topLayout.addWidget( self.stopButton, 1, 0 )
-        topLayout.addWidget( self.matrixDisplay, 0, 1, 2, 1 )
 
         mainLayout = QGridLayout()
         mainLayout.addLayout( topLayout, 0, 0 )
         mainLayout.addWidget( self.pixelRow, 0, 1, 2, 1 )
-        mainLayout.addWidget( self.valuesDisplay, 0, 2, 2, 1 )
-        mainLayout.addWidget( self.chartView, 1, 0 )
+#        mainLayout.addWidget( self.valuesDisplay, 0, 2, 2, 1 )
+#        mainLayout.addWidget( self.chartView, 1, 0 )
+        topLayout.addWidget( self.matrixDisplay, 1, 0 )
 
         mainwidget = QWidget()
         mainwidget.setLayout( mainLayout )
@@ -144,8 +144,8 @@ class MainWindow(QMainWindow):
         self.timer.stop()
 
     def refresh( self ):
-        self.serie.clear()
-        self.valuesDisplay.clear()
+#        self.serie.clear()
+#        self.valuesDisplay.clear()
         screen = app.primaryScreen()
         #grabWindow(wID, x, y, w, h)
         pix = QPixmap(screen.grabWindow( 0, int((screenW*3)/4)-10, int((screenH-nbPixels)/2), 20, nbPixels ))
@@ -157,9 +157,9 @@ class MainWindow(QMainWindow):
         for i in range( nbBlocsH ):
             y = nbPixels - (i*(nbPixels/nbBlocsH) + (nbPixels/(2*nbBlocsH)))
             colorvalue = 255 - QColor(img.pixel( 10, y ) ).black()
-            self.valuesDisplay.append( str(colorvalue) )
-            self.valuesDisplay.append( "\n" )
-            self.serie.append(y, colorvalue)
+#            self.valuesDisplay.append( str(colorvalue) )
+#            self.valuesDisplay.append( "\n" )
+#            self.serie.append(y, colorvalue)
 
             #convert colors from 0->couleurMax to 0->nbBlocsD
             if colorvalue > couleurMax:
@@ -175,6 +175,7 @@ class MainWindow(QMainWindow):
     def convertToMatrix(self, array):
 
         matrix=[[0 for j in range(nbBlocsD)] for i in range(nbBlocsH)]
+        motifS=[[[0 for i in range(nbBlocsH)] for j in range(nbBlocsD)]for z in range(1)]
 
         for i in range(nbBlocsH):
             if array[i]<nbBlocsD:
@@ -188,7 +189,8 @@ class MainWindow(QMainWindow):
                         for j in range(array[i]+1,min(nbBlocsD,array[i-1])):
                             matrix[i][j]=1
 
-        #test1Scalable.convertToHexa(motifF,nbBlocsD,nbBlocsH)  # es-ce bien la fonction a utiliser pour l'affichage ?
+        motifS[0]=matrix
+#        test1Scalable.convertToHexa(motifS,nbBlocsD,nbBlocsH)  # es-ce bien la fonction a utiliser pour l'affichage ?
         self.displayMatrix(matrix)
 
     def displayMatrix(self, matrix):
