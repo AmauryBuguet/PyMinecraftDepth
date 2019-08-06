@@ -78,7 +78,7 @@ def sendDataToDisplay(motif1,x,y,motifMult=1,frequence=0.5,sleeptime=0.5):
 						motifF[z][i][j]=motif1[z][i][j]
 				else:
 					motifF[z][i][j]=0
-	motifF=convertMap(motifF,x,y)
+	#motifF=convertMap(motifF,x,y)
 	test1Scalable.convertToHexa(motifF,x,y,frequence,sleeptime)#ici les commentaires pour marcher sans rasberry
 
 class MainWindow(QMainWindow):
@@ -150,7 +150,7 @@ class MainWindow(QMainWindow):
         mainLayout.addWidget( self.pixelRow, 0, 1, 2, 1 )
 #        mainLayout.addWidget( self.valuesDisplay, 0, 2, 2, 1 )
 #        mainLayout.addWidget( self.chartView, 1, 0 )
-        topLayout.addWidget( self.matrixDisplay, 1, 0 )
+        mainLayout.addWidget( self.matrixDisplay, 1, 0 )
 
         mainwidget = QWidget()
         mainwidget.setLayout( mainLayout )
@@ -196,6 +196,11 @@ class MainWindow(QMainWindow):
     def convertToMatrix(self, array):
 
         matrix=[[0 for j in range(nbBlocsD)] for i in range(nbBlocsH)]
+	motifS=[[0 for i in range(x)] for j in range(y)]
+	motifS=[[0, 0, 0, 0], 
+	 [1, 1, 1, 1], 
+	 [0, 0, 0, 0], 
+	 [0, 0, 0, 0]] 
 
         for i in range(nbBlocsH):
             if array[i]<nbBlocsD:
@@ -210,7 +215,7 @@ class MainWindow(QMainWindow):
                             matrix[i][j]=1
 
         sendDataToDisplay(matrix,nbBlocsD,nbBlocsH)
-        self.displayMatrix(matrix)
+        self.displayMatrix(motifS)
 
     def displayMatrix(self, matrix):
         self.matrixDisplay.clear()
