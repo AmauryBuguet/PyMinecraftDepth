@@ -60,6 +60,27 @@ nbPixels = 500
 couleurMax =  4*nbBlocsD+20
 couleurMin = 15 # en dessous de cette valeur le bloc est considéré comme étant juste devant
 
+def sendDataToDisplay(motif1,x,y,motifMult=1,frequence=0.5,sleeptime=0.5):
+	#print("motifL220",motif1)
+	if motifMult==1:
+		motifMult=len(motif1)
+		#print("MotifMult",motifMult)
+	else:
+		motifMult=1
+	motifF=[[[0 for i in range(x)] for j in range(y)]for z in range(motifMult+1)]
+	for z in range(motifMult+1):
+		for i in range(x):
+			for j in range(y):
+				if z<motifMult:
+					if motifMult==1:
+						motifF[z][i][j]=motif1[i][j]
+					else:
+						motifF[z][i][j]=motif1[z][i][j]
+				else:
+					motifF[z][i][j]=0
+	motifF=convertMap(motifF,x,y)
+	test1Scalable.convertToHexa(motifF,x,y,frequence,sleeptime)#ici les commentaires pour marcher sans rasberry
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -175,7 +196,6 @@ class MainWindow(QMainWindow):
     def convertToMatrix(self, array):
 
         matrix=[[0 for j in range(nbBlocsD)] for i in range(nbBlocsH)]
-        motifS=[[[0 for i in range(nbBlocsH)] for j in range(nbBlocsD)]for z in range(1)]
 
         for i in range(nbBlocsH):
             if array[i]<nbBlocsD:
@@ -189,8 +209,7 @@ class MainWindow(QMainWindow):
                         for j in range(array[i]+1,min(nbBlocsD,array[i-1])):
                             matrix[i][j]=1
 
-        motifS[0]=matrix
-#        test1Scalable.convertToHexa(motifS,nbBlocsD,nbBlocsH)  # es-ce bien la fonction a utiliser pour l'affichage ?
+        sendDataToDisplay(matrix,nbBlocsD,nbBlocsH)
         self.displayMatrix(matrix)
 
     def displayMatrix(self, matrix):
