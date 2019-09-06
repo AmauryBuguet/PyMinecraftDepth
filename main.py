@@ -12,11 +12,12 @@ import test1Scalable #code pour gerer les pins de la raspberry
 
 # les seules valeurs a toucher sont les 5 suivantes :
 # période d'affichage (ms)
-periode = 1000
+periode = 250
 
-# taille écran
-screenH = 768
-screenW = 1366
+# fenêtre minecraft
+mcID = 0x1800002
+screenH = 480
+screenW = 854
 
 # valeurs d'affichage
 nbBlocsD = 4 # nombre de blocs de distance
@@ -56,7 +57,7 @@ nbBlocsH = 4 # nombre de blocs de hauteur
 # ou écarter les "prises de pixels" aux extrémités
 
 #nbPixels = 4*nbBlocsH*(20-nbBlocsD) + 10*(20-nbBlocsD)
-nbPixels = 500
+nbPixels = 430
 couleurMax =  4*nbBlocsD+20
 couleurMin = 15 # en dessous de cette valeur le bloc est considéré comme étant juste devant
 
@@ -91,8 +92,8 @@ class MainWindow(QMainWindow):
         self.matrixDisplay = QTextEdit()
         self.matrixDisplay.setFixedSize( 165, 180 )
 
-#        self.valuesDisplay = QTextEdit()
-#        self.valuesDisplay.setFixedSize( 50, nbPixels )
+        self.valuesDisplay = QTextEdit()
+        self.valuesDisplay.setFixedSize( 50, nbPixels )
 
         # CHART
 #        self.serie = QLineSeries()
@@ -148,7 +149,7 @@ class MainWindow(QMainWindow):
         mainLayout = QGridLayout()
         mainLayout.addLayout( topLayout, 0, 0 )
         mainLayout.addWidget( self.pixelRow, 0, 1, 2, 1 )
-#        mainLayout.addWidget( self.valuesDisplay, 0, 2, 2, 1 )
+        mainLayout.addWidget( self.valuesDisplay, 0, 2, 2, 1 )
 #        mainLayout.addWidget( self.chartView, 1, 0 )
         mainLayout.addWidget( self.matrixDisplay, 1, 0 )
 
@@ -167,10 +168,10 @@ class MainWindow(QMainWindow):
 
     def refresh( self ):
 #        self.serie.clear()
-#        self.valuesDisplay.clear()
+        self.valuesDisplay.clear()
         screen = app.primaryScreen()
         #grabWindow(wID, x, y, w, h)
-        pix = QPixmap(screen.grabWindow( 0, int((screenW*3)/4)-10, int((screenH-nbPixels)/2), 20, nbPixels ))
+        pix = QPixmap(screen.grabWindow( mcID, int((screenW/2)+10), 0, 20, screenH-50))
         self.pixelRow.setPixmap( pix )
         img = QImage( pix.toImage() )
 
@@ -178,9 +179,9 @@ class MainWindow(QMainWindow):
 
         for i in range( nbBlocsH ):
             y = nbPixels - (i*(nbPixels/nbBlocsH) + (nbPixels/(2*nbBlocsH)))
-            colorvalue = 255 - QColor(img.pixel( 10, y ) ).black()
-#            self.valuesDisplay.append( str(colorvalue) )
-#            self.valuesDisplay.append( "\n" )
+            colorvalue = 255 - QColor(img.pixel( 19, y ) ).black()
+            self.valuesDisplay.append( str(colorvalue) )
+            self.valuesDisplay.append( "\n" )
 #            self.serie.append(y, colorvalue)
 
             #convert colors from 0->couleurMax to 0->nbBlocsD
@@ -197,11 +198,6 @@ class MainWindow(QMainWindow):
     def convertToMatrix(self, array):
 
         matrix=[[0 for j in range(nbBlocsD)] for i in range(nbBlocsH)]
-        motifS=[[0 for i in range(nbBlocsD)] for j in range(nbBlocsH)]
-        motifS=[[0, 0, 0, 0], 
-	 [1, 1, 1, 1], 
-	 [0, 0, 0, 0], 
-	 [0, 0, 0, 0]] 
 
         for i in range(nbBlocsH):
             if array[i]<nbBlocsD:
